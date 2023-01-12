@@ -4,63 +4,51 @@
 <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 <script src="https://unpkg.com/interactjs/dist/interact.min.js"></script>
 <script type="text/babel">
-	const Nijika = ({ id }) => {
-		const [position, setPosition] = React.useState({ x: 0, y: 0, width: 200, height: 200 });
-		const ref = React.useRef(null);
+  const Nijika = ({ id }) => {
+    const [position, setPosition] = React.useState({ x: 0, y: 0 });
+    const ref = React.useRef(null);
 
-		let { x, y, width, height } = position;
+    let { x, y, width, height } = position;
 
-		React.useEffect(() => {
-			interact(ref.current)
-				.draggable({
-					listeners: {
-						move (e) {
-							setPosition({
-								x: x += e.dx,
-								y: y += e.dy
-							});
-						}
-					}
-				})
-				.resizable({
-					edges: { top: true, left: true, bottom: true, right: true },
-					listeners: {
-						move (e) {
-							x += e.deltaRect.left;
-							y += e.deltaRect.top;
-							width = e.rect.width;
-							height = e.rect.height;
-							setPosition({ x, y, width, height });
-						}
-					}
-				});
-		}, []);
+    React.useEffect(() => {
+      interact(ref.current)
+        .draggable({
+          listeners: {
+            move (e) {
+              setPosition({
+                x: x += e.dx,
+                y: y += e.dy
+              });
+            }
+          }
+        })
+    }, []);
 
-		return (
-			<img
-				ref={ref}
-				src={`./image/${id}.png`}
-				style={{
-					width: `${position.width}px`,
-					height: `${position.height}px`,
-					touchAction: "none",
-					userSelect: "none",
-					transform: `translate(${position.x}px, ${position.y}px)`
-				}}
-			/>
-		);
-	}
+    return (
+      <img
+        ref={ref}
+        src={`./image/${id}.png`}
+        style={{
+          width: "200px",
+          height: "200px",
+          touchAction: "none",
+          userSelect: "none",
+          transform: `translate(${position.x}px, ${position.y}px)`
+        }}
+      />
+    );
+  }
 
-	const App = () => (
-		<div>
-			<Nijika id="doritos"/>
-			<Nijika id="ribbon"/>
-			<Nijika id="pondering"/>
-		</div>
-	);
+  const App = () => (
+    <div>
+      <Nijika id="doritos"/>
+      <Nijika id="ribbon"/>
+      <Nijika id="pondering"/>
+    </div>
+  );
 
-	ReactDOM.render(
-		<App/>,
-		document.getElementById("root")
-	);
+  ReactDOM.render(
+    <App/>,
+    document.getElementById("root")
+  );
 </script>
