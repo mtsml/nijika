@@ -1,51 +1,91 @@
-<div id="root"></div>
+<div>
+  <img src="./image/items.png" style="width: 600px;">
+</div>
+<div id="root" style="position: relative;"></div>
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 <script src="https://unpkg.com/interactjs/dist/interact.min.js"></script>
 <script type="text/babel">
-  const Nijika = ({ id }) => {
+  const Nijika = ({ item, addNijika, style }) => {
     const [position, setPosition] = React.useState({ x: 0, y: 0 });
     const ref = React.useRef(null);
-
-    let { x, y, width, height } = position;
 
     React.useEffect(() => {
       interact(ref.current)
         .draggable({
           listeners: {
             move (e) {
-              setPosition({
-                x: x += e.dx,
-                y: y += e.dy
-              });
+              setPosition((oldPosition) => ({
+                x: oldPosition.x += e.dx,
+                y: oldPosition.y += e.dy
+              }));
             }
           }
         })
+        .on("doubletap", addNijika)
     }, []);
 
     return (
       <img
         ref={ref}
-        src={`./image/${id}.png`}
+        src={`./image/${item}.png`}
         style={{
           width: "200px",
           height: "200px",
+          position: "absolute",
           touchAction: "none",
           userSelect: "none",
-          transform: `translate(${position.x}px, ${position.y}px)`
+          transform: `translate(${position.x}px, ${position.y}px)`,
+          ...style
         }}
       />
     );
   }
 
-  const App = () => (
-    <div>
-      <Nijika id="doritos"/>
-      <Nijika id="ribbon"/>
-      <Nijika id="pondering"/>
-    </div>
-  );
+  const randomInt = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  const randomPosition = () => {
+    const { top, left } = document.getElementById("root").getBoundingClientRect();
+    const { offsetHeight, offsetWidth } = document.documentElement;
+
+    return {
+      // 画面からはみ出さないように要素幅200pxを引く
+      top: `${randomInt(-1 * top, offsetHeight - top - 200)}px`,
+      left: `${randomInt(-1 * left, offsetWidth - left - 200)}px`
+    };
+  }
+
+  const ITEM = {
+    DORITOS: "doritos",
+    RIBBON: "ribbon",
+    PONDERING: "pondering"
+  };
+
+  const initialNijikas = [
+    { item: ITEM.DORITOS, style: randomPosition() },
+    { item: ITEM.RIBBON, style: randomPosition() },
+    { item: ITEM.PONDERING, style: randomPosition() }
+  ];
+
+  const App = () => {
+    const [nijikas, setNijikas] = React.useState(initialNijikas);
+
+    const addNijika = (item) => {
+      const newNijika = { item, style: randomPosition() };
+      setNijikas((oldNijikas) => [...oldNijikas, newNijika]);
+    }
+
+    return nijikas.map(nijika => (
+      <Nijika
+        item={nijika.item}
+        addNijika={() => addNijika(nijika.item)}
+        style={nijika.style}
+      />
+    ));
+  }  
 
   ReactDOM.render(
     <App/>,
