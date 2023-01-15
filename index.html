@@ -50,13 +50,17 @@
   }
 
   const randomPosition = () => {
+    // getBoundingClientRectはビューポートからの相対位置であるためスクロール量を足して絶対値を得る
     const { top, left } = document.getElementById("root").getBoundingClientRect();
+    const rootTop = top + window.pageYOffset;
+    const rootLeft = left + window.pageXOffset;
+
     const { offsetHeight, offsetWidth } = document.documentElement;
 
     return {
       // 画面からはみ出さないように要素幅200pxを引く
-      top: `${randomInt(-1 * top, offsetHeight - top - 200)}px`,
-      left: `${randomInt(-1 * left, offsetWidth - left - 200)}px`
+      top: `${randomInt(-1 * rootTop, offsetHeight - rootTop - 200)}px`,
+      left: `${randomInt(-1 * rootLeft, offsetWidth - rootLeft - 200)}px`
     };
   }
 
